@@ -7,36 +7,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Musical Canvas</title>
     <link rel="stylesheet" href="./style.css">
-    <script src="./script.js" defer>
-    </script>
+    <script src="./script.js" defer></script>
     <script src="https://kit.fontawesome.com/81b49b0c3d.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/essentia.js@0.1.0/dist/essentia-wasm.web.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/essentia.js@0.1.0/dist/essentia.js-extractor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/essentia.js@0.1.0/dist/essentia.js-plot.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 
 <body>
-    <div class="overlay" onclick="infoOff()">
-        Hello
-    </div>
+    <div class="overlay" onclick="infoOff()"> Hello </div>
     <div class="canvas-wrapper">
         <canvas class="drawing-canvas"></canvas>
     </div>
     <div class="info">
-
         <div class="start">
-            <h1 class="play-btn"><i class="fa-solid fa-paintbrush"></i>  Start Painting</h1>
-            <h1 class="info-btn"><i class="fa-solid fa-circle-info"></i>  How To Use</h1>
+            <h1 class="play-btn"><i class="fa-solid fa-paintbrush"></i> Start Painting</h1>
+            <h1 class="info-btn"><i class="fa-solid fa-circle-info"></i> How To Use</h1>
         </div>
         <div class="instrument-selector">
             <h1>Instrument: </h1>
             <div class="inst-radios">
                 <input id="guitar" type="radio" name="radio" checked>
                 <label for="guitar" class="inst-label glow-border">Guitar</label>
-
                 <input id="piano" type="radio" name="radio">
                 <label for="piano" class="inst-label glow-border">Piano</label>
-
                 <input id="voice" type="radio" name="radio">
                 <label for="voice" class="inst-label glow-border">Voice</label>
-
                 <input id="other" type="radio" name="radio">
                 <label for="other" class="inst-label glow-border">Other</label>
             </div>
@@ -47,6 +45,13 @@
             <span class="note-freq"># Hz</span>
             <span class="note-duration">for #</span>
         </div>
+        <input id="file" class="file-select" type="file" />
+        <button onclick="upload()" type="submit">Upload</button>
+        <audio src="" id="audio-player" controls>
+            <source id="audio-src" src="./resources/AScale.mp3" type="audio/mp3" />
+        </audio>
+        <div id="log-div"><br /></div>
+        <div id="plot-div"></div>
     </div>
 </body>
 
