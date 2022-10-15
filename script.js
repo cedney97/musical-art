@@ -82,8 +82,33 @@ async function onClickFeatureExtractor() {
     let hpcpgram = [];
     for (var i = 0; i < audioFrames.size(); i++) {
         hpcpgram.push(essentiaExtractor.hpcpExtractor(essentiaExtractor.vectorToArray(audioFrames.get(i))))
-        for (const hcpc of hpcpgram) {
-            console.log(hcpc)
+        for (const hpcp of hpcpgram) {
+            var notesInChord = []
+            var maxi1 = 0
+            var maxi2 = 0
+            var maxi3 = 0
+
+            for (var i = 0; i < hpcp.length; i++) {
+                if (hpcp[i] > hpcp[maxi1]) {
+                    maxi1 = i
+                }
+            }
+            while (maxi1 == maxi2) {
+                maxi2 = Math.floor(Math.random() * hpcp.length)
+            }
+            for (var i = 0; i < hpcp.length; i++) {
+                if (hpcp[i] > hpcp[maxi2] && hpcp[i] < hpcp[maxi1]) {
+                    maxi2 = i
+                }
+            }
+            while (maxi3 == maxi2 || maxi3 == maxi1) {
+                maxi3 = Math.floor(Math.random() * hpcp.length)
+            }
+            for (var i = 0; i < hpcp.length; i++) {
+                if (hpcp[i] > hpcp[maxi3] && hpcp[i] < hpcp[maxi2]) {
+                    maxi3 = i
+                }
+            }
         }
     }
 
