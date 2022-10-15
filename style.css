@@ -1,0 +1,111 @@
+/* General Cosmetics */
+@font-face {
+    font-family: "Arvo";
+    src: url("./resources/arvo/Arvo-Regular.ttf");
+}
+
+body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    background-image: url("./resources/wall.jpg");
+    background-size: cover;
+}
+
+/* For the Canvas */
+.drawing-canvas {
+    width: 70vw;
+    height: 70vh;
+}
+
+.canvas-wrapper {
+    /* display: inline-block; */
+    /* vertical-align: middle; */
+    /* margin: auto 200px; */
+    padding: 30px;
+    border: 10px solid #efefef;
+    background-color: #eaeaea;
+    /* position: relative; */
+    transition: 0.3s ease;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, .3), 1px 1px 2px rgba(0, 0, 0, .2), 40px 35px 70px -10px rgba(0, 0, 0, .5), -20px -20px 100px -10px rgba(255, 255, 255, .8);
+}
+
+.canvas-wrapper::before {
+    content: " ";
+    margin: 30px;
+    position: absolute;
+    transition: 0.3s ease;
+}
+
+/* For the Info Overlay */
+
+.overlay {
+    position: fixed;
+    display: none;
+    width: 90%;
+    height: 90%;
+    background-color: rgba(1, 21, 46, .4);
+    cursor: pointer;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    border: 2px solid;
+    border-color: rgba(1, 21, 46, .5)
+}
+
+/* For the Start and Info Buttons */
+
+.start {
+    display: flex;
+    width: 70vw;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.play-btn {
+    cursor: pointer;
+}
+
+.info-btn {
+    cursor: pointer;
+}
+
+/* For the Instrument Selectors */
+.instrument-selector {
+    display: flex;
+    width: 70vw;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+h1 {
+    font-family: "Arvo", "Helvetica"
+}
+
+.inst-radios input {
+    display: none;
+    cursor: pointer;
+}
+
+.inst-radios input:checked+label {
+    background-color: #2F5984
+}
+
+.inst-label {
+    font-family: "Arvo", "Helvetica";
+    font-size: 24px;
+    padding: 4px 12px;
+    margin-left: 1vw;
+    margin-right: 1vw;
+    background-image: radial-gradient(rgba(221, 221, 221, 1), rgba(221, 221, 221, 0));
+    cursor: pointer;
+}
+
+.glow-border {
+    border: 2px solid #dadada;
+    border-radius: 7px;
+}
