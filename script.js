@@ -40,17 +40,14 @@ infoButton.onclick = function () {
 //---------//
 
 let noteNames = ["c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b"]
-let colors = ["#ff0200", "#ff514f", "#ff7f0b", "#ff9933", "#fdff00", "#7fff00", "#09ff00", "#027fff", "#1d00ff", "#5700bf", "#7f00ff", "#d93973"]
+let colors = ["#ff0200", "#d93973", "#ff514f", "#7f00ff", "#ff7f0b", "#5700bf", "#ff9933", "#1d00ff", "#fdff00", "#027fff", "#7fff00", "#09ff00"]
 let essentiaExtractor;
 
 let audioData;
 
 const AudioContext = window.AudioContext || window.webkitAudioContext
 let audioCtx = new AudioContext()
-let plotChroma;
-let plotContainerId = "plot-div";
 
-let isComputed = false;
 let frameSize = 4096;
 let hopSize = 2048;
 
@@ -75,11 +72,6 @@ function hexToRgb(hex) {
 
 async function onClickFeatureExtractor() {
     audioData = await essentiaExtractor.getAudioChannelDataFromURL(document.getElementById("audio-player").src, audioCtx, 0)
-
-    if (isComputed) {
-        plotChroma.destroy();
-        isComputed = false;
-    }
 
     essentiaExtractor.frameSize = frameSize;
     essentiaExtractor.hopSize = hopSize;
@@ -129,6 +121,8 @@ async function onClickFeatureExtractor() {
         // console.log(chord.simple())
     }
 
+    context.clearRect(0, 0, canvas.width, canvas.height)
+
     for (var chord of chordsByChord) {
         var root = chord.root
         var quality = chord.quality()
@@ -150,14 +144,25 @@ async function onClickFeatureExtractor() {
         // console.log(numI1)
         switch (qualityI1) {
             case 'A':
-                console.log("Augmented Interval")
                 context.beginPath();
                 context.arc(randX, randY, numI1 * 10, 0, Math.PI / 3 * numI1, Math.random() > 0.5)
                 context.fill()
                 context.closePath();
                 break;
             case 'P':
-                console.log("Perfect Interval")
+                var rotation = Math.random() * Math.PI * 2
+                context.rotate(rotation)
+                context.lineWidth = "5.0"
+                context.lineCap = "round"
+                context.beginPath();
+                context.moveTo(randX, randY)
+                context.quadraticCurveTo(randX + numI1 * 5, randY - numI2 * 3, randX + numI1 * 6, randY)
+                context.quadraticCurveTo(randX + numI1 * 8, randY + numI2 * 3, randX + numI1 * 12, randY)
+                // context.closePath();
+                context.stroke()
+                context.lineWidth = "1.0"
+                context.lineCap = "butt"
+                context.rotate(-rotation)
                 break;
             case 'm':
                 var rotation = Math.random() * Math.PI * 2
@@ -176,7 +181,6 @@ async function onClickFeatureExtractor() {
                 }
                 context.closePath();
                 context.rotate(-rotation)
-                console.log("minor Interval")
                 break;
             case 'M':
                 var rg = context.createRadialGradient(randX, randY, numI1 * 5, randX, randY, numI1 * 11)
@@ -186,18 +190,15 @@ async function onClickFeatureExtractor() {
 
                 context.beginPath();
                 context.fillRect(randX - (numI1 * 75) / 2, randY - (numI1 * 50) / 2, numI1 * 75, numI1 * 50);
-                console.log("Major Interval")
                 context.closePath();
                 break;
             case 'd':
-                
-                console.log("diminished Interval")
+
                 break;
             default:
                 console.log("No Interval?")
         }
     }
-    isComputed = true;
 }
 
 $(document).ready(function () {
