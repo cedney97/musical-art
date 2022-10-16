@@ -1,6 +1,6 @@
 var canvas = document.querySelector(".drawing-canvas")
 var context = canvas.getContext("2d")
-context.fillStyle = "#FF0000"
+context.fillStyle = "#000000"
 context.fillRect(5, 5, canvas.width - 10, canvas.height - 10)
 
 var playButton = document.querySelector(".play-btn")
@@ -41,8 +41,9 @@ infoButton.onclick = function () {
 
 //---------//
 
+let noteNames = ["c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b"]
+let colors = ["#ff0200", "#ff514f","#ff7f0b", "#ff9933", "#fdff00", "#7fff00", "#09ff00", "#027fff", "#1d00ff", "#5700bf", "#7f00ff", "#d93973"]
 let essentiaExtractor;
-let audioURL = "./resources/AScale.mp3";
 
 let audioData;
 
@@ -55,7 +56,7 @@ let isComputed = false;
 let frameSize = 4096;
 let hopSize = 2048;
 
-const upload = () => {
+const uploadToPlayer = () => {
     var file = document.querySelector(".file-select").files[0]
     var reader = new FileReader();
     reader.onload = function(e) {
@@ -78,38 +79,59 @@ async function onClickFeatureExtractor() {
     essentiaExtractor.profile.HPCP.nonLnear = true;
 
     let audioFrames = essentiaExtractor.FrameGenerator(audioData, frameSize, hopSize);
-    let chords = [];
+    let chordsByNote = [];
+    let chordsByChord = [];
+    let chordsByIntervals = [];
     let hpcpgram = [];
     for (var i = 0; i < audioFrames.size(); i++) {
-        hpcpgram.push(essentiaExtractor.hpcpExtractor(essentiaExtractor.vectorToArray(audioFrames.get(i))))
-        for (const hpcp of hpcpgram) {
-            var notesInChord = []
-            var maxi1 = 0
-            var maxi2 = 0
-            var maxi3 = 0
+        var ext = essentiaExtractor.hpcpExtractor(essentiaExtractor.vectorToArray(audioFrames.get(i)))
+        hpcpgram.push(ext)
+    }
 
-            for (var i = 0; i < hpcp.length; i++) {
-                if (hpcp[i] > hpcp[maxi1]) {
-                    maxi1 = i
-                }
-            }
-            while (maxi1 == maxi2) {
-                maxi2 = Math.floor(Math.random() * hpcp.length)
-            }
-            for (var i = 0; i < hpcp.length; i++) {
-                if (hpcp[i] > hpcp[maxi2] && hpcp[i] < hpcp[maxi1]) {
-                    maxi2 = i
-                }
-            }
-            while (maxi3 == maxi2 || maxi3 == maxi1) {
-                maxi3 = Math.floor(Math.random() * hpcp.length)
-            }
-            for (var i = 0; i < hpcp.length; i++) {
-                if (hpcp[i] > hpcp[maxi3] && hpcp[i] < hpcp[maxi2]) {
-                    maxi3 = i
-                }
+    for (var hpcp of hpcpgram) {
+        // console.log(hpcp)
+        var maxi1 = 0
+        var maxi2 = 0
+        var maxi3 = 0
+        for (var i = 0; i < hpcp.length; i++) {
+            if (hpcp[i] > hpcp[maxi1]) {
+                maxi1 = i
             }
         }
+        for (var i = 0; i < hpcp.length; i++) {
+            if (hpcp[i] > hpcp[maxi2] && hpcp[i] < hpcp[maxi1]) {
+                maxi2 = i
+            }
+        }
+        for (var i = 0; i < hpcp.length; i++) {
+            if (hpcp[i] > hpcp[maxi3] && hpcp[i] < hpcp[maxi2]) {
+                maxi3 = i
+            }
+        }
+        var notes = [teoria.note(noteNames[(maxi1 + 9) % 12]), teoria.note(noteNames[(maxi2 + 9) % 12]), teoria.note(noteNames[(maxi3 + 9) % 12])]
+        chordsByNote.push(notes)
+    }
+
+    for (var notes of chordsByNote) {
+        var chord = teoria.chord(notes[0].toString())
+        var intervals = ["P1", teoria.interval(notes[0], notes[1]).simple(true).toString(), teoria.interval(notes[0], notes[2]).simple(true).toString()]
+        chord.voicing(intervals)
+        chordsByChord.push(chord)
+        chordsByIntervals.push(intervals)
+        // console.log(chord.simple())
+    }
+
+    for (var chord of chordsByChord) {
+        var root = chord.root
+        var quality = chord.quality()
+        var intervals = chord.voicing()
+        var randX = Math.floor(Math.random() * canvas.width)
+        var randY = Math.floor(Math.random() * canvas.height)
+        var color = colors[root.chroma()]
+        // console.log(color + " in " + intervals + " as " + quality)
+        canvas.fillStyle = color
+        canvas.strokeStyle = color
+        
     }
 
     plotChroma.create(
