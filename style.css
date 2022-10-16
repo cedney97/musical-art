@@ -1,4 +1,4 @@
-/* General Cosmetics */
+/* General Styles */
 @font-face {
     font-family: "Arvo";
     src: url("./resources/arvo/Arvo-Regular.ttf");
@@ -11,6 +11,10 @@ body {
     flex-direction: column;
     background-image: url("./resources/wall.jpg");
     background-size: cover;
+}
+
+h1, h2, h3, h4 {
+    font-family: "Arvo", "Helvetica"
 }
 
 /* For the Canvas */
@@ -44,37 +48,89 @@ body {
     position: fixed;
     display: none;
     width: 90%;
-    height: 90%;
-    background-color: rgba(1, 21, 46, .4);
+    height: 100%;
+    background-color: #ebfefe;
     cursor: pointer;
     top: 50%;
     left: 50%;
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     border: 2px solid;
-    border-color: rgba(1, 21, 46, .5)
+    border-color: rgba(1, 21, 46, .5);
+    flex-direction: column;
+    align-items: center;
+}
+
+.overlay-content {
+    padding-left: 5px
+}
+
+.overlay ul li {
+    font-family: "Arvo", "Helvetica"
 }
 
 /* For the Start and Info Buttons */
 
 .start {
-    display: flex;
+    display: grid;
     width: 70vw;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-around;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    margin-top: 3vh;
 }
 
-.play-btn {
-    cursor: pointer;
+.buttons {
+    grid-row: 1;
+    grid-column: 1;
+    justify-self: center;
+    align-self: center;
 }
 
 .info-btn {
+    grid-row: 1;
+    grid-column: 3;
+    cursor: pointer;
+    justify-self: center;
+    align-self: center;
+}
+
+.player {
+    grid-row: 1;
+    grid-column: 2;
+    justify-self: center;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#file {
+    display: none;
+}
+
+#upload {
+    font-family: "Arvo", "Helvetica";
     cursor: pointer;
 }
 
+#paint-btn {
+    font-family: "Arvo", "Helvetica";
+    cursor: pointer;
+}
+
+#file-upload {
+    font-family: "Arvo", "Helvetica";
+    cursor: pointer;
+}
+
+/* For Function Buttons */
+.buttons {
+    display: flex;
+    flex-direction: column;
+}
+
 /* For the Instrument Selectors */
-.instrument-selector {
+.style-selector {
     display: flex;
     width: 70vw;
     flex-direction: row;
@@ -82,20 +138,16 @@ body {
     justify-content: center;
 }
 
-h1 {
-    font-family: "Arvo", "Helvetica"
-}
-
-.inst-radios input {
+.style-radios input {
     display: none;
     cursor: pointer;
 }
 
-.inst-radios input:checked+label {
+.style-radios input:checked+label {
     background-color: #2F5984
 }
 
-.inst-label {
+.style-label {
     font-family: "Arvo", "Helvetica";
     font-size: 24px;
     padding: 4px 12px;
@@ -108,4 +160,45 @@ h1 {
 .glow-border {
     border: 2px solid #dadada;
     border-radius: 7px;
+}
+
+/* For Palette Selector */
+
+.palette-selector {
+    display: flex;
+    width: 70vw;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.color-radios input {
+    display: none;
+    cursor: pointer;
+}
+
+.color-radios input:checked+label {
+    background-color: #2F5984
+}
+
+.color-label {
+    font-family: "Arvo", "Helvetica";
+    font-size: 24px;
+    padding: 4px 12px;
+    margin-left: 1vw;
+    margin-right: 1vw;
+    background-image: radial-gradient(rgba(221, 221, 221, 1), rgba(221, 221, 221, 0));
+    cursor: pointer;
+}
+
+.glow-border {
+    border: 2px solid #dadada;
+    border-radius: 7px;
+}
+
+/* For Credits */
+.credits {
+    display: flex;
+    width: 70vw;
+    justify-content: center;
 }

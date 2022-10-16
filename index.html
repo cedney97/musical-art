@@ -15,44 +15,73 @@
     <script src="https://cdn.jsdelivr.net/npm/essentia.js@0.1.0/dist/essentia.js-plot.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="./resources/teoria-master/teoria.js"></script>
+    <link rel="shortcut icon" href="#" />
 </head>
 
 <body>
-    <div class="overlay" onclick="infoOff()"> Hello </div>
+    <div class="overlay" onclick="infoOff()">
+        <div class="overlay-content">
+            <h1>Hello and welcome to Your Musical Canvas!</h1>
+            <h2>To use this project, upload an mp3 file, using the "Upload File" button. Then, transport that music to
+                the audio player by pressing the "Upload to Audio Player" button. Finally, press the "Paint" button to
+                translate that song into art! (Note: It does take a second or two to load, so be patient!)</h2>
+            <h2>To customize the experience a little bit more, you have two options to choose from when it comes to
+                painting. You can have the structured version, which makes positions of shapes less random and more
+                based on the intervals in the music. Or, you can choose the random variant, where the position of the
+                shapes is random, but the calculation of the bounds of the shapes is still dependent on the chords.</h2>
+            <h2>Finally, you can choose a color palette from the selectors below the style selectors!</h2>
+            <br />
+            <h1>How it works:</h1>
+            <h2>The translation from music to art uses two very helpful libraries: <a class="link"
+                    href="https://mtg.github.io/essentia.js/docs/api/index.html">Essentia</a> and <a class="link"
+                    href="https://github.com/saebekassebil/teoria">Teoria</a>. Essentia allowed me to get the three most
+                resonant notes at a given time in an uploaded mp3 file. Teoria, then, translates those notes into chords
+                and intervals.</h2>
+            <h2>For each type of interval, a different shape is drawn with a color specified by the root of the note:
+            </h2>
+            <ul>
+                <li>Augmented &#8594; Filled Arc</li>
+                <li>Diminshed &#8594; Line</li>
+                <li>Perfect &#8594; Squiggle</li>
+                <li>Major &#8594; Faded Circle</li>
+                <li>Minor &#8594; Triangle</li>
+            </ul>
+            <h2>Thank you and I hope you enjoy!</h2>
+        </div>
+    </div>
     <div class="canvas-wrapper">
         <canvas class="drawing-canvas" width="1275" height="850"></canvas>
     </div>
     <div class="info">
         <div class="start">
-            <h1 class="play-btn"><i class="fa-solid fa-paintbrush"></i> Start Painting</h1>
+            <div class="buttons">
+                <input id="file" class="file-select" type="file" accept=".mp3" />
+                <button onclick="document.getElementById('file').click()" id="file-upload">Choose Your File
+                    (.mp3)</button>
+                <button onclick="uploadToPlayer()" id="upload" type="submit">Upload To Audio Player &#8594;</button>
+                <button id="paint-btn"><i class="fa-solid fa-paintbrush"></i> Paint</button>
+            </div>
+            <div class="player">
+                <h2 class="title">No File Uploaded</h2>
+                <audio src="" id="audio-player" controls>
+                    <source id="audio-src" src="" type="audio/mp3" />
+                </audio>
+            </div>
             <h1 class="info-btn"><i class="fa-solid fa-circle-info"></i> How To Use</h1>
         </div>
-        <div class="instrument-selector">
-            <h1>Instrument: </h1>
-            <div class="inst-radios">
-                <input id="guitar" type="radio" name="radio" checked>
-                <label for="guitar" class="inst-label glow-border">Guitar</label>
-                <input id="piano" type="radio" name="radio">
-                <label for="piano" class="inst-label glow-border">Piano</label>
-                <input id="voice" type="radio" name="radio">
-                <label for="voice" class="inst-label glow-border">Voice</label>
-                <input id="other" type="radio" name="radio">
-                <label for="other" class="inst-label glow-border">Other</label>
+        <div class="style-selector">
+            <h1>Style: </h1>
+            <div class="style-radios">
+                <input id="random" type="radio" name="radio" checked>
+                <label for="random" class="style-label glow-border">Random</label>
+                <input id="structured" type="radio" name="radio">
+                <label for="structured" class="style-label glow-border">Structured</label>
             </div>
         </div>
-        <div class="note-info">
-            <h1>Current Note: </h1>
-            <span class="note-name">A</span>
-            <span class="note-freq"># Hz</span>
-            <span class="note-duration">for #</span>
+        <div class="credits">
+            <h4>Credits: <a class="link" href="https://github.com/saebekassebil/teoria">Teoria</a> & <a class="link"
+                    href="https://mtg.github.io/essentia.js/docs/api/index.html">Essentia</a></h4>
         </div>
-        <input id="file" class="file-select" type="file" />
-        <button onclick="uploadToPlayer()" type="submit">Upload</button>
-        <audio src="" id="audio-player" controls>
-            <source id="audio-src" src="./resources/AScale.mp3" type="audio/mp3" />
-        </audio>
-        <div id="log-div"><br /></div>
-        <div id="plot-div"></div>
     </div>
 </body>
 

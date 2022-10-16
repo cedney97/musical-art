@@ -4,33 +4,15 @@ var context = canvas.getContext("2d")
 var playButton = document.querySelector(".play-btn")
 var infoButton = document.querySelector(".info-btn")
 var overlay = document.querySelector(".overlay")
-var isPainting = false
 
 function infoOn() {
-    overlay.style.display = "block"
-    paintingOff()
+    overlay.style.display = "flex"
+    document.getElementById("audio-player").style.display = "none"
 }
 
 function infoOff() {
     overlay.style.display = "none"
-}
-
-function paintingOn() {
-    isPainting = true
-    playButton.innerHTML = '<i class="fa-solid fa-music"></i>  Listening...'
-}
-
-function paintingOff() {
-    isPainting = false
-    playButton.innerHTML = '<i class="fa-solid fa-paintbrush"></i>  Start Painting'
-}
-
-playButton.onclick = function () {
-    if (!isPainting) {
-        paintingOn()
-    } else {
-        paintingOff()
-    }
+    document.getElementById("audio-player").style.display = "inline"
 }
 
 infoButton.onclick = function () {
@@ -50,14 +32,21 @@ let audioCtx = new AudioContext()
 
 let frameSize = 4096;
 let hopSize = 2048;
+var file
 
 const uploadToPlayer = () => {
-    var file = document.querySelector(".file-select").files[0]
-    var reader = new FileReader();
-    reader.onload = function (e) {
-        document.getElementById("audio-player").src = e.target.result
+    file = document.querySelector(".file-select").files[0]
+    if (typeof file == "undefined") {
+        document.querySelector(".title").textContent = "Invalid File"
+    } else {
+        var fileName = file.name
+        document.querySelector(".title").textContent = fileName.substring(0, fileName.length - 4)
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            document.getElementById("audio-player").src = e.target.result
+        }
+        reader.readAsDataURL(file)
     }
-    reader.readAsDataURL(file)
 }
 
 // https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
@@ -71,6 +60,11 @@ function hexToRgb(hex) {
 }
 
 async function onClickFeatureExtractor() {
+    if (typeof file == "undefined") {
+        document.querySelector(".title").textContent = "Unable to Paint"
+        return;
+    }
+
     audioData = await essentiaExtractor.getAudioChannelDataFromURL(document.getElementById("audio-player").src, audioCtx, 0)
 
     essentiaExtractor.frameSize = frameSize;
@@ -121,14 +115,17 @@ async function onClickFeatureExtractor() {
         // console.log(chord.simple())
     }
 
+    // Set up 
     context.clearRect(0, 0, canvas.width, canvas.height)
+    var random = true
+    if (document.getElementById("structured").checked) {
+        random = false
+    }
 
     for (var chord of chordsByChord) {
         var root = chord.root
         var quality = chord.quality()
         var intervals = chord.voicing()
-        var randX = Math.floor(Math.random() * canvas.width)
-        var randY = Math.floor(Math.random() * canvas.height)
         var colorHex = colors[root.chroma()]
         var colorRGB = hexToRgb(colorHex)
         // console.log(color + " in " + intervals + " as " + quality)
@@ -141,11 +138,20 @@ async function onClickFeatureExtractor() {
         var qualityI2 = intervals[2].toString().charAt(0)
         var numI2 = intervals[1].toString().charAt(1)
 
+        if (random) {
+            var x = Math.floor(Math.random() * canvas.width)
+            var y = Math.floor(Math.random() * canvas.height)
+        } else {
+            var x = numI1 * (1275.0 / 12)
+            var y = numI2 * (850.0 / 12)
+        }
+
+
         // console.log(numI1)
         switch (qualityI1) {
             case 'A':
                 context.beginPath();
-                context.arc(randX, randY, numI1 * 10, 0, Math.PI / 3 * numI1, Math.random() > 0.5)
+                context.arc(x, y, numI1 * 10, 0, Math.PI / 3 * numI1, Math.random() > 0.5)
                 context.fill()
                 context.closePath();
                 break;
@@ -155,10 +161,9 @@ async function onClickFeatureExtractor() {
                 context.lineWidth = "5.0"
                 context.lineCap = "round"
                 context.beginPath();
-                context.moveTo(randX, randY)
-                context.quadraticCurveTo(randX + numI1 * 5, randY - numI2 * 3, randX + numI1 * 6, randY)
-                context.quadraticCurveTo(randX + numI1 * 8, randY + numI2 * 3, randX + numI1 * 12, randY)
-                // context.closePath();
+                context.moveTo(x, y)
+                context.quadraticCurveTo(x + numI1 * 5, y - numI2 * 3, x + numI1 * 6, y)
+                context.quadraticCurveTo(x + numI1 * 8, y + numI2 * 3, x + numI1 * 12, y)
                 context.stroke()
                 context.lineWidth = "1.0"
                 context.lineCap = "butt"
@@ -169,33 +174,52 @@ async function onClickFeatureExtractor() {
                 context.rotate(rotation)
                 var base = numI2 * 25
                 var height = numI1 * 25
+                context.lineWidth = "5.0"
+                context.lineCap = "round"
                 context.beginPath();
-                context.moveTo(randX - base / 2, randY)
-                context.lineTo(randX, randY + height)
-                context.lineTo(randX + base / 2, randY)
-                context.lineTo(randX - base / 2, randY)
+                context.moveTo(x - base / 2, y)
+                context.lineTo(x, y + height)
+                context.lineTo(x + base / 2, y)
+                context.lineTo(x - base / 2, y)
                 if (Math.random() < 0.5) {
                     context.stroke();
                 } else {
                     context.fill();
                 }
                 context.closePath();
+                context.lineWidth = "1.0"
+                context.lineCap = "butt"
                 context.rotate(-rotation)
                 break;
             case 'M':
-                var rg = context.createRadialGradient(randX, randY, numI1 * 5, randX, randY, numI1 * 11)
-                rg.addColorStop(0, 'rgba(' + colorRGB.r  + ', ' + colorRGB.b + ', ' + colorRGB.g + ', 1)')
-                rg.addColorStop(1, 'rgba(' + colorRGB.r  + ', ' + colorRGB.b + ', ' + colorRGB.g + ', 0)')
+                var rg = context.createRadialGradient(x, y, numI1 * 5, x, y, numI1 * 11)
+                rg.addColorStop(0, 'rgba(' + colorRGB.r + ', ' + colorRGB.b + ', ' + colorRGB.g + ', 1)')
+                rg.addColorStop(1, 'rgba(' + colorRGB.r + ', ' + colorRGB.b + ', ' + colorRGB.g + ', 0)')
                 context.fillStyle = rg
 
                 context.beginPath();
-                context.fillRect(randX - (numI1 * 75) / 2, randY - (numI1 * 50) / 2, numI1 * 75, numI1 * 50);
+                context.fillRect(x - (numI1 * 75) / 2, y - (numI1 * 50) / 2, numI1 * 75, numI1 * 50);
                 context.closePath();
                 break;
             case 'd':
-
+                context.lineWidth = "5.0"
+                context.lineCap = "round"
+                context.beginPath();
+                context.moveTo(x, y)
+                context.lineTo(x + (Math.floor(Math.random() * 3) - 1) * numI2 * 6, y + (Math.floor(Math.random() * 3) - 1) * numI1 * 7)
+                context.stroke()
+                context.lineWidth = "1.0"
+                context.lineCap = "butt"
                 break;
             default:
+                context.lineWidth = "5.0"
+                context.lineCap = "round"
+                context.beginPath();
+                context.moveTo(x, y)
+                context.lineTo(x + (Math.floor(Math.random() * 3) - 1) * numI2 * 6, y + (Math.floor(Math.random() * 3) - 1) * numI1 * 7)
+                context.stroke()
+                context.lineWidth = "1.0"
+                context.lineCap = "butt"
                 console.log("No Interval?")
         }
     }
@@ -205,15 +229,7 @@ $(document).ready(function () {
     EssentiaWASM().then(async function (WasmModule) {
         essentiaExtractor = new EssentiaExtractor(WasmModule);
 
-        $("#log-div").html(
-            "<h5> essentia-" + essentiaExtractor.version + " wasm backend loaded ..."
-        );
-
-        $("#log-div").append(
-            '<button id="btn" class="ui white inverted button"> Compute HPCP Chroma </button>'
-        )
-
-        var button = document.getElementById("btn")
+        var button = document.getElementById("paint-btn")
         button.addEventListener("click", () => onClickFeatureExtractor(), false)
     })
 })
