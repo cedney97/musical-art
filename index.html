@@ -14,6 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/essentia.js@0.1.0/dist/essentia.js-extractor.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/essentia.js@0.1.0/dist/essentia.js-plot.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="./resources/teoria-master/teoria.js"></script>
 </head>
 
 <body>
@@ -46,7 +47,7 @@
             <span class="note-duration">for #</span>
         </div>
         <input id="file" class="file-select" type="file" />
-        <button onclick="upload()" type="submit">Upload</button>
+        <button onclick="uploadToPlayer()" type="submit">Upload</button>
         <audio src="" id="audio-player" controls>
             <source id="audio-src" src="./resources/AScale.mp3" type="audio/mp3" />
         </audio>
